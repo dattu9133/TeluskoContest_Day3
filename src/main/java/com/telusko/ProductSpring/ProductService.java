@@ -1,11 +1,12 @@
 package com.telusko.ProductSpring;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProductService {
@@ -13,26 +14,34 @@ public class ProductService {
     @Autowired
     ProductDB db;
 
-//    public void addProduct(Product p){
-////        products.add(p);
-//
-//        db.save(p);
-//
-//    }
-//
+
     public List<Product> getAllProducts(){
 
         return db.findAll();
     }
-//
-//    public Product getProduct(String name){
-//        for(Product p : products){
-//            if(p.getName().equals(name))
-//                return p;
-//        }
-//
-//        return null;
-//    }
+
+
+	public Stream<Product> getProductWithPlace(String txt1) {
+		return  db.findAll().stream().filter(p -> p.getPlace().toLowerCase().contains(txt1.toLowerCase()));
+	}
+
+
+	public List<Product> getProductOutOfWarranty() {
+		LocalDate currentDate = LocalDate.now();
+        int year = currentDate.getYear();
+		return db.findAll().stream().filter(p -> p.getWarranty() < year).collect(Collectors.toList());
+	}
+
+
+	public Stream<Product> getProductWithText(String txt) {
+		return db.findAll().stream().filter(p -> p.getName().toLowerCase().contains(txt.toLowerCase())||p.getPlace().toLowerCase().contains(txt.toLowerCase())||p.getType().toLowerCase().contains(txt.toLowerCase()));
+	}
+
+
+	public Stream<Product> getProductWithName(String txt1) {
+		return db.findAll().stream().filter(p -> p.getName().toLowerCase().contains(txt1.toLowerCase()));
+	}
+
 
 
 }
